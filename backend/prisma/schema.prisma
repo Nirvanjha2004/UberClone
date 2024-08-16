@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://neondb_owner:U3kfZNF1PTcW@ep-tiny-union-a5rpohwl.us-east-2.aws.neon.tech/neondb?sslmode=require"
+}
+
+
+enum paymentStatus{
+  SUCCESS
+  FAILED
+  PROCESSING
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  password   String
+  firstName  String
+  lastName   String
+  Wallet     Wallet?
+  orders     Order[]
+  rides      Rides[]
+}
+
+model Rides {
+  id         Int      @id @default(autoincrement())
+  fromAddress String
+  toAddress   String
+  date        DateTime
+  userId      Int
+  user        User  @relation(fields: [userId], references: [id])
+}
+
+model Wallet {
+  id      Int     @id @default(autoincrement())
+  balance Int
+  userId  Int @unique
+  user    User @relation(fields: [userId], references: [id])
+  payments Payment[]
+}
+
+model Payment {
+  id          Int      @id @default(autoincrement())
+  status      paymentStatus
+  paymentTime DateTime
+  orderId     Int
+  walletId    Int
+  order       Order   @relation(fields: [orderId], references: [id])
+  wallet      Wallet  @relation(fields: [walletId], references: [id])
+}
+
+model Order {
+  id            Int      @id @default(autoincrement())
+  status        Boolean
+  pickUpLocation String
+  dropOffLocation String
+  startTime     DateTime
+  endTime       DateTime
+  fare          Float
+  otp           Int
+  userId        Int
+  user          User   @relation(fields: [userId], references: [id])
+  Payment       Payment[]
+}
