@@ -7,28 +7,43 @@ export function Body() {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
 
-  const handleSubmit: MouseEventHandler<HTMLButtonElement> | undefined=async ()=>{
-    const response1 = await axios({
-      method:'get', 
-      url: `https://nominatim.openstreetmap.org/search?q=${fromAddress}&format=json`
-    })
-    const latitude1 = response1[0].lat;
-    const longitude1 = response1[0].lon;
 
+  const encodedFromAddress = encodeURIComponent(fromAddress);
+  const encodedToAddress = encodeURIComponent(toAddress);
 
-    const response2 = await axios({
-      method:'get', 
-      url: `https://nominatim.openstreetmap.org/search?q=${toAddress}&format=json`
-    })
-    const latitude2 = response2[0].lat;
-    const longitude2 = response2[0].lon;
-    const distance = await axios({
-      method:'get', 
-      url: `https://api.distancematrix.ai/maps/api/distancematrix/json?origins=${latitude1},${longitude1}&destinations=${latitude2},${longitude2}&key=temZFnIvsyGVrvrAk9OaFUIBjOKxoKGVVKAHWF3TmAH5MBUl3LEl1f3XYxhqUDMC`
-    })
+  console.log(encodedFromAddress)
+  console.log(encodedToAddress)
 
-    console.log(distance);
-  }
+  const handleSubmit: MouseEventHandler<HTMLButtonElement> = async (e) => {
+    e.preventDefault();
+    console.log("command reached inside distance calculator")
+    const url1= `https://nominatim.openstreetmap.org/search?q=${encodedFromAddress}&format=json`;
+    const url2= `https://nominatim.openstreetmap.org/search?q=${encodedToAddress}&format=json`;
+    try {
+      const [response1, response2] = await axios.all([
+        axios.get(url1), 
+        axios.get(url2)
+      ]); 
+      // console.log(response1.data[0].lat);
+      // console.log(response2.data[0].lat);
+
+      const latitude1 = Math.abs(response1.data[0].lat);
+      const longitude1 = Math.abs(response1.data[0].lon);
+
+      const latitude2 = Math.abs(response2.data[0].lat);
+      const longitude2 = Math.abs(response2.data[0].lon);
+  
+      const distance = await axios({
+        method: 'get',
+        url: `https://api.distancematrix.ai/maps/api/distancematrix/json?origins=${latitude1},${longitude1}&destinations=${latitude2},${longitude2}&key=temZFnIvsyGVrvrAk9OaFUIBjOKxoKGVVKAHWF3TmAH5MBUl3LEl1f3XYxhqUDMC`,
+      });
+  
+      console.log(distance.data.rows[0].elements);
+    } catch (error) {
+      console.error('Error occurred:', error);
+    }
+  };
+  
 
   return (
     <div className="grid grid-cols-12 gap-4 text-white">
