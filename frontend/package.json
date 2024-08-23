@@ -13,6 +13,7 @@
     "@material-tailwind/react": "^2.1.9",
     "@reduxjs/toolkit": "^2.2.7",
     "@types/axios": "^0.9.36",
+    "firebase": "^10.13.0",
     "geocodio-library-node": "^1.6.1",
     "mapbox-gl": "^3.5.2",
     "maplibre-gl": "^4.5.1",
