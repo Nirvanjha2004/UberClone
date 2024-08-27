@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://bankWebHook_owner:EtusUyk76xJl@ep-proud-mud-a5w4yddv.us-east-2.aws.neon.tech/bankWebHook?sslmode=require"
+}
+
+model User{
+  id  Int @id @default(autoincrement())
+  email String @unique
+  name String
+  number Int @unique
+  password String
+
+
+  OnRampTransaction OnRampTransaction[]
+
+  Balance Balance[]
+}
+
+enum onRampStatus{
+  Success
+  Failure
+  Processing
+}
+
+model OnRampTransaction {
+  id Int @id @default(autoincrement())
+  status onRampStatus
+  token String
+  amount Int
+  provider String
+  startTime DateTime
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Balance {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  amount Int
+  locked Int
+  user   User @relation(fields: [userId], references: [id])
+}
