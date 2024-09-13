@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import PaymentOptions from "./PaymentOptions";
 
+
+// Yahan add kiya ha how to add selected effect
 const ChooseRide = () => {
   const rideOptions = [
     {
@@ -37,6 +39,12 @@ const ChooseRide = () => {
     },
   ];
 
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  const handleSelect = (index) => {
+    setSelectedIndex(index);
+  };
+
   const [isPaymentOptionsOpen, setPaymentOptionsOpen] = useState(false);
 
   const handlePaymentClick = () => {
@@ -55,7 +63,15 @@ const ChooseRide = () => {
         {rideOptions.map((option, index) => (
           <div
             key={index}
-            className="flex items-center p-4 border border-gray-300 rounded-lg hover:shadow-lg cursor-pointer"
+            // Add onClick handler to select the div
+            onClick={() => handleSelect(index)}
+            // Conditionally apply the selected class if the div is selected
+            className={`flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer 
+            ${
+              selectedIndex === index
+                ? "bg-blue-100 border-blue-500 shadow-lg"
+                : "hover:shadow-lg"
+            }`}
           >
             <img
               src={option.icon}
@@ -85,11 +101,7 @@ const ChooseRide = () => {
             className="flex items-center cursor-pointer"
             onClick={handlePaymentClick}
           >
-            <img
-              src="/cash.png"
-              alt="Cash"
-              className="w-6 h-6 mr-2"
-            />
+            <img src="/cash.png" alt="Cash" className="w-6 h-6 mr-2" />
             <span>Cash</span>
           </div>
 
