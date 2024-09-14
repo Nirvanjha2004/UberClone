@@ -2,27 +2,61 @@ import { useState } from "react";
 import { FaDotCircle } from "react-icons/fa";
 import { MdPinDrop } from "react-icons/md";
 import ChooseRide from "./ChooseRide";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { endPointSuccess, startPointSuccess } from "../features/counter/mapSlice";
+import axios from "axios";
 const RideOptions = () => {
   const [isRideSelectorOpen, setRideSelectorOpen] = useState(false);
   const places = useSelector((state: any) => state.place);
   if (places.len != 0) {
     console.log(places);
   }
-  const handleSearchClick = () => {
-    setRideSelectorOpen(true);
-  };
+
+
+  const dispatch = useDispatch();
+
+
+  //inputValue --> pickup Location
+  //inputValue2 --> dropOff Location
   const [inputValue, setInputValue] = useState("");
   const [inputValue2, setInputValue2] = useState("");
 
   const [pickUpSuggestions, setPickUpSuggestions] = useState([]);
   const [dropOffSuggestions, setDropOffSuggestions] = useState([]);
 
+  // const [pickup, setPickup] = useState([]);
+  // const [dropOff, setDropOff] = useState([]);
 
+  const encodedFromAddress = encodeURIComponent(inputValue); //ye to ek pickup location ho gya jiska ek lat aur ek long niklega
+  const encodedToAddress = encodeURIComponent(inputValue2); // aur iske do alag ek lat aur long niklega
+
+  const handleSearchClick =async () => {
+    setRideSelectorOpen(true);
+    const pickuplocation= await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${encodedFromAddress}&format=json&apiKey=d5d444bf7883484ea51a09a789bdb867`);
+    const dropofflocation = await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${encodedToAddress}&format=json&apiKey=d5d444bf7883484ea51a09a789bdb867`);
+    
+    const longitudeCord = pickuplocation.data.features[0].properties.lon;
+    const latitudeCord = pickuplocation.data.features[0].properties.lat;
+
+    const longitudeCord2 = dropofflocation.data.features[0].properties.lon;
+    const latitudeCord2 = dropofflocation.data.features[0].properties.lat;
+
+    // setPickup([longitudeCord,latitudeCord]);
+    // setDropOff([longitudeCord2,latitudeCord2]);
+    console.log(longitudeCord,latitudeCord);
+
+    dispatch(startPointSuccess([longitudeCord,latitudeCord]));
+    dispatch(endPointSuccess([longitudeCord2,latitudeCord2]));
+    
+    
+  };
+  
+  console.log(inputValue, inputValue2);
   // Filter suggestions based on input value
   const handleInputChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
+    dispatch(startPointSuccess(value));
 
     if (value.length > 0) {
       const filteredSuggestions = places.currentPlace.filter((suggestion) =>
@@ -37,7 +71,7 @@ const RideOptions = () => {
   const handleInputChange2 = (e) => {
     const value = e.target.value;
     setInputValue2(value);
-
+    dispatch(endPointSuccess(value));
     if (value.length > 0) {
       const filteredSuggestions = places.currentPlace.filter((suggestion) =>
         suggestion.toLowerCase().startsWith(value.toLowerCase())

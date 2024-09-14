@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
 
 const MapWithRoute = () => {
   const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const pickUpselector = useSelector((state: RootState) => state.map);
+  const dropOffSelector = useSelector((state: RootState) => state.map);
 
+  console.log(pickUpselector);
+  console.log(dropOffSelector);
   // Function to fetch the exact path from OSRM API
   const getRoute = async () => {
     const start = [25.5941, 85.1376]; // Starting point

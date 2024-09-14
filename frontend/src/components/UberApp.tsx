@@ -1,6 +1,5 @@
 import Header from "./Header";
 import RideOptions from "./RideOptions";
-import Map from "./Map";
 import { useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
