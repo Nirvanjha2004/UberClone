@@ -21,6 +21,7 @@ const RideOptions = () => {
   const [isSelectedPickup, setIsSelectedPickup] = useState(false);  // New flag for pickup
   const [isSelectedDropOff, setIsSelectedDropOff] = useState(false); // New flag for dropoff
   const [isModalOpen, setModalOpen] = useState(false); // Modal open state
+  const [pickUpTime, setPickUpTime] = useState();
 
   const dispatch = useDispatch();
   const MIN_ADDRESS_LENGTH = 3;
@@ -147,8 +148,12 @@ const RideOptions = () => {
   };
 
   // Close Modal
-  const handleModalClose = () => {
+  const handleModalClose = (e) => {
+    e.preventDefault();
+    setPickUpTime(e.target.value);
     setModalOpen(false);
+
+    console.log(pickUpTime)
   };
 
   // Handle Pickup Input Change
@@ -320,7 +325,9 @@ const RideOptions = () => {
           onClick={handlePickupNowClick} // Open modal on click
           className="w-full bg-[#f8f4f4] rounded-lg p-3 focus:outline-none"
         >
-          <option>Pickup now</option>
+          <option
+          value={pickUpTime}
+          >Pickup now</option>
         </select>
       </div>
 

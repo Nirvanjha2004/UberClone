@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { getDate, getTime } from '../features/counter/pickUpTimeSlice';
 
 const PickupModal = ({ isOpen, onClose }) => {
+
+    const [date, setDate] = useState();
+    const [time, setTime] = useState();
+
+    const dispatch = useDispatch();
   if (!isOpen) return null; // Don't render the modal if it's not open
 
   return (
@@ -30,7 +37,12 @@ const PickupModal = ({ isOpen, onClose }) => {
         <h2 className="font-bold text-lg mb-4">When do you want to be picked up?</h2>
 
         {/* Date Selection */}
-        <div className="mb-4">
+        <div className="mb-4"
+        onChange={(e)=>{
+            e.preventDefault();
+            dispatch(getDate(e.target.value));
+            setDate(e.target.value);
+        }}>
           <label className="block font-semibold mb-2" htmlFor="pickupDate">
             Date
           </label>
@@ -43,7 +55,11 @@ const PickupModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Time Selection */}
-        <div className="mb-4">
+        <div className="mb-4" onChange={(e)=>{
+            e.preventDefault();
+            dispatch(getTime(e.target.value));
+            setTime(e.target.value);
+        }}>
           <label className="block font-semibold mb-2" htmlFor="pickupTime">
             Time
           </label>
